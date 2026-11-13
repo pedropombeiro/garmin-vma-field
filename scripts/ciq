@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+action=${1:-build}
+field=${2:-live}
+device=${3:-fr970}
+case "$field" in live | lap | pace) ;; *)
+  echo "Unknown field: $field" >&2
+  exit 2
+  ;;
+esac
+sdk=${CIQ_SDK_HOME:-}
+if [[ -z "$sdk" ]]; then
+  sdk=$(cat "$HOME/Library/Application Support/Garmin/ConnectIQ/current-sdk.cfg")
+fi
+if [[ ! -x "$sdk/bin/monkeyc" ]]; then
+  echo "Set CIQ_SDK_HOME to your Connect IQ SDK directory." >&2
+  exit 1
+fi
+key=${CIQ_DEVELOPER_KEY:-"$HOME/Library/Application Support/Garmin/ConnectIQ/Keys/garmin-vma-field.der"}
+if [[ ! -f "$key" ]]; then
+  mkdir -p "$(dirname "$key")"
+  # noclobber avoids replacing an existing signing identity.
+  (
+    set -o noclobber
+    umask 077
+    openssl genrsa 4096 | openssl pkcs8 -topk8 -inform PEM -outform DER -nocrypt >"$key"
+  )
+fi
+mkdir -p build
+
+build() {
+  "$sdk/bin/monkeyc" -f "apps/$field/monkey.jungle" -d "$device" \
+    -y "$key" -o "build/vma-$field-$device.prg" -w "$@"
+}
+
+case "$action" in
+build) build ;;
+sim | test)
+  if [[ "$action" == test ]]; then
+    build -t
+  else
+    build
+  fi
+  "$sdk/bin/connectiq"
+  # Do not probe port 1234 with nc: the simulator expects a protocol
+  # handshake and can block on an empty connection.
+  sleep 3
+  if [[ "$action" == test ]]; then
+    # SDK 9.3.0 monkeydo returns 1 even after a successful test run.
+    # Require its explicit summary rather than trusting the exit code.
+    logfile="build/tests-$field-$device.log"
+    "$sdk/bin/monkeydo" "build/vma-$field-$device.prg" "$device" -t >"$logfile" 2>&1 || true
+    cat "$logfile"
+    grep -Eq '^PASSED \(passed=[1-9][0-9]*, failed=0, errors=0\)' "$logfile"
+  else
+    "$sdk/bin/monkeydo" "build/vma-$field-$device.prg" "$device"
+  fi
+  ;;
+package)
+  for field in live lap pace; do
+    "$sdk/bin/monkeyc" -f "apps/$field/monkey.jungle" -e -r -w \
+      -y "$key" -o "build/vma-$field.iq"
+  done
+  ;;
+check)
+  for device in fr970 venu3s venu2s instinct2s fr55; do
+    for field in live lap pace; do build; done
+  done
+  ;;
+*)
+  echo "Usage: scripts/ciq {build|test|sim|package|check} [live|lap|pace] [device]" >&2
+  exit 2
+  ;;
+esac

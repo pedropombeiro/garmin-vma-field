@@ -1,0 +1,44 @@
+[tools]
+java = "temurin-21.0.13+9.0.LTS"
+
+[tasks.build]
+description = "Build one field for a watch"
+usage = '''
+arg "[field]" default="live" help="Field to build" {
+  choices "live" "lap" "pace"
+}
+arg "[device]" default="fr970" help="Device ID from the manifest"
+complete "device" run="cat config/devices.txt"
+'''
+run = 'scripts/ciq build "$usage_field" "$usage_device"'
+
+[tasks.test]
+description = "Test all three fields sequentially in the Connect IQ simulator"
+usage = '''
+arg "[device]" default="fr970" help="Device ID to simulate"
+complete "device" run="cat config/devices.txt"
+'''
+run = '''
+for field in live lap pace; do
+    scripts/ciq test "$field" "$usage_device" || exit $?
+done
+'''
+
+[tasks.sim]
+description = "Build and open a field in the simulator"
+usage = '''
+arg "[field]" default="live" help="Field to simulate" {
+  choices "live" "lap" "pace"
+}
+arg "[device]" default="fr970" help="Device ID to simulate"
+complete "device" run="cat config/devices.txt"
+'''
+run = 'scripts/ciq sim "$usage_field" "$usage_device"'
+
+[tasks.package]
+description = "Build Store packages for all three fields and all supported watches"
+run = 'scripts/ciq package'
+
+[tasks.check]
+description = "Build all three fields on representative watches"
+run = 'scripts/ciq check'

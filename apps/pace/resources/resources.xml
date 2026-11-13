@@ -1,0 +1,15 @@
+<resources>
+    <strings><string id="AppName">VMA pace range</string></strings>
+    <properties>
+        <property id="lowPercent" type="float">75.0</property>
+        <property id="highPercent" type="float">88.0</property>
+    </properties>
+    <settings>
+        <setting propertyKey="@Properties.lowPercent" title="@Strings.LowPercent">
+            <settingConfig type="numeric" min="1" max="300"/>
+        </setting>
+        <setting propertyKey="@Properties.highPercent" title="@Strings.HighPercent">
+            <settingConfig type="numeric" min="1" max="300"/>
+        </setting>
+    </settings>
+</resources>

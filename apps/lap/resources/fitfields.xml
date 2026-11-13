@@ -1,0 +1,6 @@
+<resources>
+    <fitContributions>
+        <fitField id="0" displayInActivityLaps="true" sortOrder="0" precision="0"
+            dataLabel="@Strings.LapLabel" unitLabel="@Strings.Percent"/>
+    </fitContributions>
+</resources>

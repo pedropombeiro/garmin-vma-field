@@ -1,0 +1,6 @@
+<resources>
+    <fitContributions>
+        <fitField id="0" displayInChart="true" chartTitle="@Strings.LiveChart" fillColor="#00AAFF" sortOrder="0" precision="0"
+            dataLabel="@Strings.LiveLabel" unitLabel="@Strings.Percent"/>
+    </fitContributions>
+</resources>

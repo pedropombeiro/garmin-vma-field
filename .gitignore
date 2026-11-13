@@ -1,0 +1,11 @@
+/build/
+/bin/
+/gen/
+/.runtime/
+/mise.local.toml
+*.der
+*.pem
+*.iq
+*.prg
+*.prg.debug.xml
+.DS_Store
