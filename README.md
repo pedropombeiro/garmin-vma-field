@@ -182,3 +182,7 @@ The generator updates all three manifests, Jungle build files, app resources,
 and device-sized launcher icons. It preserves app IDs. Package outputs are
 `build/vma-live.iq`, `build/vma-lap.iq`, and `build/vma-pace.iq`. Packaging builds
 all listed products and their SDK variants. It does not publish anything.
+
+## License
+
+[MIT](LICENSE). Copyright 2026 Pedro Pombeiro.
