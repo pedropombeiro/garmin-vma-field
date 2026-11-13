@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Build all three fields on representative watches"
+set -euo pipefail
+exec scripts/ciq check

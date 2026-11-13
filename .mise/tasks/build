@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Build one field for a watch"
+#USAGE arg "[field]" default="live" help="Field to build" {
+#USAGE   choices "live" "lap" "pace"
+#USAGE }
+#USAGE arg "[device]" default="fr970" help="Device ID from the manifest"
+#USAGE complete "device" run="cat config/devices.txt"
+set -euo pipefail
+exec scripts/ciq build "${usage_field:?}" "${usage_device:?}"

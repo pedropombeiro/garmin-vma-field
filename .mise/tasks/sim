@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Build and open a field in the simulator"
+#USAGE arg "[field]" default="live" help="Field to simulate" {
+#USAGE   choices "live" "lap" "pace"
+#USAGE }
+#USAGE arg "[device]" default="fr970" help="Device ID to simulate"
+#USAGE complete "device" run="cat config/devices.txt"
+set -euo pipefail
+exec scripts/ciq sim "${usage_field:?}" "${usage_device:?}"

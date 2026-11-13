@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Build Store packages for all three fields and all supported watches"
+set -euo pipefail
+exec scripts/ciq package

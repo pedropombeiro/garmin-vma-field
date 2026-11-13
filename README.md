@@ -83,6 +83,45 @@ and zero errors.
 
 ## Install on a watch
 
+The install task builds normal binaries, verifies the connected watch's model
+and device ID, and copies only the selected fields:
+
+```shell
+mise run install all fr970
+mise run install live venu3s
+mise run install all fr970 --overwrite
+```
+
+Existing files require `--overwrite`. The task uses stable names such as
+`VMA-LIVE.PRG`. If you previously copied differently named binaries manually,
+remove those copies manually to avoid duplicate apps.
+
+For MTP on macOS, install
+[Garmin MTP CLI](https://github.com/Likenttt/garmin-mtp-cli) and its dependencies
+using its build instructions (`brew install libmtp pkgconf`, then build and
+install the CLI). Ensure `garmin-mtp` is on `PATH`. Close Garmin Express and
+OpenMTP before using the task. It does not install dependencies or close apps.
+
+If multiple USB MTP devices are connected, use `garmin-mtp devices` and select
+one with `--device-index INDEX`. A normally mounted watch instead supports:
+
+```shell
+mise run install all fr970 --mount /Volumes/GARMIN
+```
+
+Model verification uses `GARMIN/GarminDevice.xml` and the downloaded SDK device
+profile. Disconnect the watch after installation, then add the fields under
+the activity's **Data Screens > Connect IQ** settings. Transfers are sequential,
+not transactional: if a later transfer fails, earlier fields remain installed.
+
+To test installation logic without a connected watch or 1Password access:
+
+```shell
+python3 -m unittest discover -s tests -p 'test_*.py'
+```
+
+Alternatively, install manually:
+
 1. Build each desired field for that exact watch model. If you just ran tests,
    build again to replace the test-enabled binary.
 1. Connect the watch over USB and copy its `.prg` files into `GARMIN/APPS`.

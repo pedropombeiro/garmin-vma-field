@@ -9,3 +9,4 @@
 *.prg
 *.prg.debug.xml
 .DS_Store
+__pycache__/

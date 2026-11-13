@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#MISE description="Build and sideload fields onto a model-verified USB watch"
+#USAGE arg "[field]" default="all" help="Field to install" {
+#USAGE   choices "all" "live" "lap" "pace"
+#USAGE }
+#USAGE arg "[device]" default="fr970" help="Connected watch model"
+#USAGE complete "device" run="cat config/devices.txt"
+#USAGE flag "--overwrite" help="Replace this project's existing PRG files"
+#USAGE flag "--device-index <index>" help="MTP device index from garmin-mtp devices"
+#USAGE flag "--mount <path>" help="Mounted watch root instead of MTP"
+#USAGE complete "path" type="dir"
+set -euo pipefail
+args=()
+if [[ "${usage_overwrite:-false}" == true ]]; then args+=(--overwrite); fi
+if [[ -n "${usage_device_index:-}" ]]; then args+=(--device-index "$usage_device_index"); fi
+if [[ -n "${usage_mount:-}" ]]; then args+=(--mount "$usage_mount"); fi
+exec python3 scripts/install-watch.py "${usage_field:?}" "${usage_device:?}" "${args[@]}"

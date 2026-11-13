@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#MISE description="Test all three fields sequentially in the Connect IQ simulator"
+#USAGE arg "[device]" default="fr970" help="Device ID to simulate"
+#USAGE complete "device" run="cat config/devices.txt"
+set -euo pipefail
+for field in live lap pace; do
+  scripts/ciq test "$field" "${usage_device:?}"
+done
