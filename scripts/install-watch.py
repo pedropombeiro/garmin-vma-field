@@ -87,12 +87,18 @@ class MtpWatch:
         run(*self.command, "pull", "/GARMIN/GarminDevice.xml", str(destination))
 
     def check_destination(self, names, overwrite):
-        run(*self.command, "list", "/GARMIN/APPS")
+        listing = run(*self.command, "list", "/GARMIN")
+        directories = re.findall(r"^d\s+-\s+(.+)/\s*$", listing, re.MULTILINE)
+        matches = [name for name in directories if name.casefold() == "apps"]
+        if len(matches) != 1:
+            raise ValueError("Cannot identify a unique Apps directory on the watch.")
+        self.apps_path = f"/GARMIN/{matches[0]}"
+        run(*self.command, "list", self.apps_path)
         # garmin-mtp itself refuses existing filenames without --overwrite.
 
     def push(self, source, overwrite):
         flags = ("--overwrite",) if overwrite else ()
-        run(*self.command, "push", *flags, str(source), "/GARMIN/APPS")
+        run(*self.command, "push", *flags, str(source), self.apps_path)
 
 
 def install(args):

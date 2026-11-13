@@ -113,6 +113,11 @@ class InstallTests(unittest.TestCase):
             patch.object(installer, "run", return_value="[0] Garmin watch\n") as run,
         ):
             watch = installer.MtpWatch(None)
+            run.return_value = "d  -            Apps/\nd  -            Activity/\n"
+            watch.check_destination(["VMA-LIVE.PRG"], False)
+            run.assert_called_with(
+                "garmin-mtp", "--device-index", "0", "list", "/GARMIN/Apps"
+            )
             watch.push(Path("VMA-LIVE.PRG"), False)
             run.assert_called_with(
                 "garmin-mtp",
@@ -120,7 +125,7 @@ class InstallTests(unittest.TestCase):
                 "0",
                 "push",
                 "VMA-LIVE.PRG",
-                "/GARMIN/APPS",
+                "/GARMIN/Apps",
             )
             watch.push(Path("VMA-LIVE.PRG"), True)
             self.assertIn("--overwrite", run.call_args.args)
