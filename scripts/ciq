@@ -32,7 +32,7 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
-op document get "${CIQ_SIGNING_KEY_ITEM:-rop7mdtrjemgc53skwwbrdk3qe}" \
+op document get "${CIQ_SIGNING_KEY_ITEM:-Garmin VMA fields signing key}" \
   --vault "${CIQ_SIGNING_KEY_VAULT:-Private}" --out-file "$key" --file-mode 0600
 openssl pkey -inform DER -in "$key" -check -noout >/dev/null
 mkdir -p build

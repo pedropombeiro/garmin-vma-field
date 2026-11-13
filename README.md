@@ -48,7 +48,7 @@ The scripts find the current SDK through SDK Manager's macOS configuration.
 Set `CIQ_SDK_HOME` to override it. Builds retrieve the signing key from the
 **Garmin VMA fields signing key** document in 1Password's **Private** vault.
 Set `CIQ_SIGNING_KEY_ITEM` and `CIQ_SIGNING_KEY_VAULT` to override the
-document ID and vault. You might need to approve access in the 1Password app.
+document title or ID and vault. You might need to approve access in 1Password.
 
 Each invocation downloads the key into a private temporary directory with mode
 `0600`, validates it, and removes it on exit, including ordinary errors and
