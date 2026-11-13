@@ -17,6 +17,7 @@ Read `README.md` for build, simulator, installation, and timing behavior.
   Verify help with `mise run TASK --help` and completion with
   `mise __complete_word__ --shell zsh --line 'mise run TASK PREFIX'` without
   running builds or tests. Argument-free tasks use built-in task-name completion.
-- Signing keys are private and live outside the repository. Never add one to Git.
+- The signing key lives in 1Password. `scripts/ciq` retrieves a temporary copy and
+  removes it on exit. Never persist, replace, generate, or add signing keys to Git.
 - No remote repository or Store entry is created by the build tasks. Ask before
   publishing or pushing anything.

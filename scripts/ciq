@@ -18,16 +18,23 @@ if [[ ! -x "$sdk/bin/monkeyc" ]]; then
   echo "Set CIQ_SDK_HOME to your Connect IQ SDK directory." >&2
   exit 1
 fi
-key=${CIQ_DEVELOPER_KEY:-"$HOME/Library/Application Support/Garmin/ConnectIQ/Keys/garmin-vma-field.der"}
-if [[ ! -f "$key" ]]; then
-  mkdir -p "$(dirname "$key")"
-  # noclobber avoids replacing an existing signing identity.
-  (
-    set -o noclobber
-    umask 077
-    openssl genrsa 4096 | openssl pkcs8 -topk8 -inform PEM -outform DER -nocrypt >"$key"
-  )
-fi
+command -v op >/dev/null || {
+  echo "Install the 1Password CLI (op) to retrieve the signing key." >&2
+  exit 1
+}
+umask 077
+key_dir=$(mktemp -d "${TMPDIR:-/tmp}/garmin-vma-signing.XXXXXXXX")
+key="$key_dir/signing.der"
+cleanup() {
+  rm -f "$key"
+  rmdir "$key_dir"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+op document get "${CIQ_SIGNING_KEY_ITEM:-rop7mdtrjemgc53skwwbrdk3qe}" \
+  --vault "${CIQ_SIGNING_KEY_VAULT:-Private}" --out-file "$key" --file-mode 0600
+openssl pkey -inform DER -in "$key" -check -noout >/dev/null
 mkdir -p build
 
 build() {

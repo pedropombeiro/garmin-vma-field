@@ -23,6 +23,8 @@ Requirements:
 - [mise](https://mise.jdx.dev/). The project pins Java 21 without changing your
   global Java configuration.
 - Python 3 to regenerate project metadata after changing the device list.
+- [1Password CLI](https://developer.1password.com/docs/cli/) with access to the
+  signing-key document in your Private vault.
 
 1. Install the project runtime:
 
@@ -43,10 +45,16 @@ Requirements:
    Outputs are `build/vma-FIELD-DEVICE.prg`.
 
 The scripts find the current SDK through SDK Manager's macOS configuration.
-Set `CIQ_SDK_HOME` to override it. The first build creates a signing key at
-`~/Library/Application Support/Garmin/ConnectIQ/Keys/garmin-vma-field.der`, outside
-the repository. Set `CIQ_DEVELOPER_KEY` to use an existing DER key. Keep that key
-private and back it up before publishing an app.
+Set `CIQ_SDK_HOME` to override it. Builds retrieve the signing key from the
+**Garmin VMA fields signing key** document in 1Password's **Private** vault.
+Set `CIQ_SIGNING_KEY_ITEM` and `CIQ_SIGNING_KEY_VAULT` to override the
+document ID and vault. You might need to approve access in the 1Password app.
+
+Each invocation downloads the key into a private temporary directory with mode
+`0600`, validates it, and removes it on exit, including ordinary errors and
+interruptions. No persistent key is generated or used. A forced kill or system
+crash can prevent cleanup. Keep the original 1Password document: Store updates
+need the same signing identity.
 
 ## Test and simulate
 
